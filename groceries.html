@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Lists</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        .generated-date {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        .store-section {
+            margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafafa;
+        }
+        .store-section.backup {
+            border-color: #ff9800;
+            background: #fff8f0;
+        }
+        .store-header {
+            font-size: 1.8em;
+            color: #444;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        .store-section.backup .store-header {
+            color: #e65100;
+            border-bottom-color: #ff9800;
+        }
+        .item-list {
+            list-style: none;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        .item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+        .item.checked {
+            opacity: 0.6;
+            background: #f5f5f5;
+        }
+        .item.checked .item-name {
+            text-decoration: line-through;
+            color: #999;
+        }
+        .item-checkbox {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .item-name {
+            flex: 1;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+        }
+        .item-quantity {
+            color: #666;
+            font-size: 0.95em;
+            margin-right: 15px;
+            min-width: 80px;
+            text-align: right;
+        }
+        .item-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .cost-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            text-align: right;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        .store-section.backup .cost-summary {
+            color: #e65100;
+            border-color: #ff9800;
+        }
+        .progress-bar {
+            margin-top: 15px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+            .item:hover { transform: none; box-shadow: none; }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.8em; }
+            .store-header { font-size: 1.4em; }
+            .item { flex-wrap: wrap; }
+            .item-quantity { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Grocery Lists</h1>
+        <div class="generated-date">Generated on November 03, 2025 at 12:23 AM</div>
+        <div class="store-section" id="store_Persian_Grocer_(Preferred_Items_+_Selected_Pantry)">
+            <h2 class="store-header">Persian Grocer (Preferred Items + Selected Pantry)</h2>
+            <ul class="item-list">
+                <li class="item" id="Persian_Grocer_(Preferred_Items_+_Selected_Pantry)_walnuts">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">walnuts</span>
+                    <span class="item-quantity">4.00 tbsp</span>
+                    
+                </li>
+                <li class="item" id="Persian_Grocer_(Preferred_Items_+_Selected_Pantry)_cucumber">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">cucumber</span>
+                    <span class="item-quantity">10.00 amount</span>
+                    
+                </li>
+                <li class="item" id="Persian_Grocer_(Preferred_Items_+_Selected_Pantry)_broccoli">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">broccoli</span>
+                    <span class="item-quantity">13.00 oz</span>
+                    
+                </li>
+                <li class="item" id="Persian_Grocer_(Preferred_Items_+_Selected_Pantry)_scallion">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">scallion</span>
+                    <span class="item-quantity">0.50 bunch</span>
+                    
+                </li>
+                <li class="item" id="Persian_Grocer_(Preferred_Items_+_Selected_Pantry)_cashews">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">cashews</span>
+                    <span class="item-quantity">1.00 cup</span>
+                    <span class="item-badge">Pantry</span>
+                </li>
+                <li class="item" id="Persian_Grocer_(Preferred_Items_+_Selected_Pantry)_chili_flakes">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">chili flakes</span>
+                    <span class="item-quantity">1.00 tbsp</span>
+                    <span class="item-badge">Pantry</span>
+                </li>
+            </ul>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="cost-summary">Projected Cost: $20.50</div>
+        </div>
+        <div class="store-section backup" id="store_Superstore___Backup_(Unassigned_Items_+_Selected_Pantry)">
+            <h2 class="store-header">Superstore - Backup (Unassigned Items + Selected Pantry)</h2>
+            <ul class="item-list">
+                <li class="item" id="Superstore___Backup_(Unassigned_Items_+_Selected_Pantry)_avocado">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">avocado</span>
+                    <span class="item-quantity">2.00 amount</span>
+                    
+                </li>
+                <li class="item" id="Superstore___Backup_(Unassigned_Items_+_Selected_Pantry)_lime">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">lime</span>
+                    <span class="item-quantity">2.00 amount</span>
+                    
+                </li>
+                <li class="item" id="Superstore___Backup_(Unassigned_Items_+_Selected_Pantry)_lime_juice">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">lime juice</span>
+                    <span class="item-quantity">8.00 tbsp</span>
+                    
+                </li>
+                <li class="item" id="Superstore___Backup_(Unassigned_Items_+_Selected_Pantry)_mint">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">mint</span>
+                    <span class="item-quantity">1.00 bunch</span>
+                    
+                </li>
+                <li class="item" id="Superstore___Backup_(Unassigned_Items_+_Selected_Pantry)_plain_yogurt">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">plain yogurt</span>
+                    <span class="item-quantity">4.00 tbsp</span>
+                    
+                </li>
+                <li class="item" id="Superstore___Backup_(Unassigned_Items_+_Selected_Pantry)_brown_sugar">
+                    <input type="checkbox" class="item-checkbox" onchange="toggleItem(this)">
+                    <span class="item-name">brown sugar</span>
+                    <span class="item-quantity">1.00 tbsp</span>
+                    <span class="item-badge">Pantry</span>
+                </li>
+            </ul>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="cost-summary">Projected Cost: $4.20</div>
+        </div>
+    </div>
+    <script>
+        function toggleItem(checkbox) {
+            const item = checkbox.parentElement;
+            if (checkbox.checked) {
+                item.classList.add('checked');
+            } else {
+                item.classList.remove('checked');
+            }
+            updateProgress(item.closest('.store-section'));
+        }
+
+        function updateProgress(storeSection) {
+            const items = storeSection.querySelectorAll('.item');
+            const checkedItems = storeSection.querySelectorAll('.item.checked');
+            const progress = (checkedItems.length / items.length) * 100;
+            const progressFill = storeSection.querySelector('.progress-fill');
+            progressFill.style.width = progress + '%';
+        }
+    </script>
+</body>
+</html>
