@@ -1,0 +1,506 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Integer Sum Practice Quiz — Party Octopus Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #111827;
+            --ink: #e5e7eb;
+            --muted: #94a3b8;
+            --accent: #22c55e;
+            --warn: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: linear-gradient(160deg, #0b1020, #0c1226 40%, #0b142a);
+            color: var(--ink);
+            min-height: 100dvh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        .wrap {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(24px, 3vw, 38px);
+            letter-spacing: .2px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #0b1020;
+            border: 1px solid #1f2937;
+            border-radius: 14px;
+            padding: 10px 14px;
+        }
+
+        .pill {
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: #0d162a;
+            border: 1px solid #1f2937;
+        }
+
+            .pill b {
+                color: var(--ink);
+            }
+
+        .btn {
+            background: #1f2937;
+            color: var(--ink);
+            border: 1px solid #334155;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+            .btn:hover {
+                filter: brightness(1.1);
+            }
+
+            .btn.primary {
+                background: #16a34a;
+                border-color: #16a34a;
+            }
+
+            .btn.warn {
+                background: #ef4444;
+                border-color: #ef4444;
+            }
+
+        .card {
+            background: var(--card);
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px 8px;
+            border-bottom: 1px dashed #1f2937;
+            text-align: left;
+        }
+
+        th {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        td input {
+            width: 110px;
+            max-width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0b1020;
+            color: var(--ink);
+        }
+
+        .rowIndex {
+            color: var(--muted);
+            width: 36px;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .ops {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .result {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+            .result .score {
+                font-size: 22px;
+                font-weight: 800;
+            }
+
+        .ok {
+            color: var(--accent);
+        }
+
+        .bad {
+            color: var(--warn);
+        }
+
+        footer {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* --- Party Octopus --- */
+        #octo-parade {
+            position: fixed;
+            left: -40vw; /* start off-screen */
+            top: 65%;
+            width: min(280px, 40vw);
+            pointer-events: none;
+            opacity: 0;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,.35));
+            z-index: 9999;
+        }
+
+            #octo-parade.show {
+                opacity: 1;
+                animation: swim-across 6500ms linear forwards, bob 1800ms ease-in-out infinite alternate;
+            }
+
+        @keyframes swim-across {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(160vw);
+            }
+        }
+
+        @keyframes bob {
+            from {
+                transform: translateY(0) rotate(-1deg);
+            }
+
+            to {
+                transform: translateY(-10px) rotate(1deg);
+            }
+        }
+
+        /* Tiny bubble trail */
+        #bubble-trail {
+            position: fixed;
+            bottom: 15vh;
+            left: -10vw;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        .bubble {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(173, 216, 230, .9);
+            animation: float-up 2000ms ease-out forwards;
+            filter: blur(.2px);
+        }
+
+        @keyframes float-up {
+            from {
+                transform: translate(0, 0) scale(1);
+                opacity: .9;
+            }
+
+            to {
+                transform: translate(-20px, -120px) scale(.7);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <h1>Integer Sum Practice (−10 … 10)</h1>
+            <div class="stats">
+                <div class="pill">Timer: <b id="timer">00:00</b></div>
+                <div class="pill">Correct: <b id="correct">0</b>/10</div>
+                <div class="pill">Score: <b id="score">0</b></div>
+                <button id="startBtn" class="btn primary">Start</button>
+            </div>
+        </header>
+
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="rowIndex">#</th>
+                        <th>Question</th>
+                        <th>Your Answer</th>
+                        <th>✓</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+
+            <footer>
+                <button id="submitBtn" class="btn">Finish & Grade</button>
+                <button id="retryBtn" class="btn warn">New Quiz</button>
+                <div id="summary" class="result" aria-live="polite"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Party Octopus (inline SVG so it works offline) -->
+    <svg id="octo-parade" viewBox="0 0 300 200" aria-hidden="true">
+        <!-- Party hat -->
+        <polygon points="155,22 190,88 120,88" fill="#f472b6" />
+        <circle cx="155" cy="20" r="6" fill="#fde68a" />
+        <!-- Head -->
+        <ellipse cx="150" cy="90" rx="60" ry="55" fill="#8b5cf6" />
+        <!-- Eyes -->
+        <circle cx="135" cy="85" r="8" fill="#111827" />
+        <circle cx="165" cy="85" r="8" fill="#111827" />
+        <circle cx="132" cy="82" r="3" fill="#e5e7eb" />
+        <circle cx="162" cy="82" r="3" fill="#e5e7eb" />
+        <!-- Smile -->
+        <path d="M130 105 Q150 120 170 105" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round" />
+        <!-- Tentacles -->
+        <g fill="#7c3aed">
+            <path d="M90 120 q-40 20 -20 40 q25 22 30 -8" />
+            <path d="M110 130 q-40 20 -20 40 q25 22 30 -8" />
+            <path d="M130 135 q-40 20 -20 40 q25 22 30 -8" />
+            <path d="M150 135 q-10 35 10 45 q25 10 20 -15" />
+            <path d="M170 135 q 40 20 20 40 q-25 22 -30 -8" />
+            <path d="M190 130 q 40 20 20 40 q-25 22 -30 -8" />
+            <path d="M210 120 q 40 20 20 40 q-25 22 -30 -8" />
+        </g>
+        <!-- Sparkles -->
+        <g fill="#fde68a">
+            <circle cx="95" cy="40" r="3" />
+            <circle cx="210" cy="35" r="3" />
+            <circle cx="70" cy="70" r="3" />
+            <circle cx="235" cy="70" r="3" />
+        </g>
+    </svg>
+
+    <!-- Bubble trail container -->
+    <div id="bubble-trail" aria-hidden="true"></div>
+
+    <script>
+        // --- Utilities ---
+        const $ = sel => document.querySelector(sel);
+        const $$ = sel => Array.from(document.querySelectorAll(sel));
+        const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        // --- State ---
+        let questions = []; // {a,b,ans}
+        let startedAt = null;
+        let timerId = null;
+
+        // --- Timer ---
+        function startTimer() {
+            startedAt = Date.now();
+            updateTimer(); // immediate paint
+            timerId = setInterval(updateTimer, 250);
+        }
+        function stopTimer() {
+            if (timerId) { clearInterval(timerId); timerId = null; }
+        }
+        function secondsElapsed() {
+            if (!startedAt) return 0;
+            return Math.floor((Date.now() - startedAt) / 1000);
+        }
+        function updateTimer() {
+            const s = secondsElapsed();
+            const mm = String(Math.floor(s / 60)).padStart(2, '0');
+            const ss = String(s % 60).padStart(2, '0');
+            $('#timer').textContent = `${mm}:${ss}`;
+        }
+
+        // --- Quiz Generation ---
+        function makeQuestion() {
+            const a = randInt(-10, 10);
+            const b = randInt(-10, 10);
+            return { a, b, ans: a + b };
+        }
+
+        function generateQuiz() {
+            questions = [];
+            for (let i = 0; i < 10; i++) questions.push(makeQuestion());
+
+            const tbody = $('#tbody');
+            tbody.innerHTML = '';
+            questions.forEach((q, i) => {
+                const tr = document.createElement('tr');
+
+                const tdIndex = document.createElement('td');
+                tdIndex.className = 'rowIndex';
+                tdIndex.textContent = i + 1;
+
+                const tdQ = document.createElement('td');
+                tdQ.className = 'ops';
+                const fmt = n => (n < 0 ? `(${n})` : `${n}`);
+                tdQ.textContent = `${fmt(q.a)} + ${fmt(q.b)} =`;
+
+                const tdInput = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.inputMode = 'numeric';
+                input.autocomplete = 'off';
+                input.setAttribute('aria-label', `Answer for question ${i + 1}`);
+                tdInput.appendChild(input);
+
+                const tdTick = document.createElement('td');
+                tdTick.className = 'tick';
+                tdTick.textContent = '';
+
+                tr.appendChild(tdIndex);
+                tr.appendChild(tdQ);
+                tr.appendChild(tdInput);
+                tr.appendChild(tdTick);
+                tbody.appendChild(tr);
+            });
+
+            $('#correct').textContent = '0';
+            $('#score').textContent = '0';
+            $('#summary').innerHTML = '';
+            $('#timer').textContent = '00:00';
+
+            // reset parade if it was mid-animation
+            resetOctopus();
+        }
+
+        // --- Grading ---
+        function gradeQuiz() {
+            stopTimer();
+            const usedSeconds = secondsElapsed();
+            let correct = 0;
+
+            $$('#tbody tr').forEach((tr, i) => {
+                const input = tr.querySelector('input');
+                const tick = tr.querySelector('.tick');
+                const userVal = Number(input.value);
+                const isRight = Number.isFinite(userVal) && (userVal === questions[i].ans);
+                tick.textContent = isRight ? '✓' : '✗';
+                tick.style.color = isRight ? 'var(--accent)' : 'var(--warn)';
+                if (isRight) correct++;
+            });
+
+            const score = correct * 100 - usedSeconds;
+            $('#correct').textContent = correct.toString();
+            $('#score').textContent = score.toString();
+
+            const summary = $('#summary');
+            summary.innerHTML =
+                `<span class="score ${score >= 0 ? 'ok' : 'bad'}">Score: ${score}</span>` +
+                `<span class="pill">Correct: <b>${correct}/10</b></span>` +
+                `<span class="pill">Time: <b>${usedSeconds}s</b></span>`;
+
+            // Trigger the octopus if it's a perfect 10/10 (as requested)
+            if (correct === 10) {
+                triggerOctopusParade();
+            }
+        }
+
+        // --- Party Octopus Logic ---
+        const octo = $('#octo-parade');
+        const bubbleTrail = $('#bubble-trail');
+        let bubbleInterval = null;
+
+        function triggerOctopusParade() {
+            // Start bubbles
+            bubbleTrail.style.left = '-10vw';
+            bubbleTrail.style.bottom = '15vh';
+            startBubbles();
+
+            // Show + animate octo
+            octo.classList.add('show');
+
+            // Stop bubbles and hide octo after animation ends
+            const onEnd = () => {
+                stopBubbles();
+                octo.classList.remove('show');
+                octo.removeEventListener('animationend', onEnd);
+            };
+            octo.addEventListener('animationend', onEnd);
+        }
+
+        function resetOctopus() {
+            stopBubbles();
+            octo.classList.remove('show');
+        }
+
+        function startBubbles() {
+            if (bubbleInterval) return;
+            bubbleInterval = setInterval(() => {
+                // Create 2–4 bubbles per tick
+                const count = randInt(2, 4);
+                for (let i = 0; i < count; i++) {
+                    const b = document.createElement('div');
+                    b.className = 'bubble';
+                    b.style.left = (parseFloat(getComputedStyle(octo).left) + 80 + randInt(-10, 10)) + 'px';
+                    b.style.bottom = (randInt(10, 22)) + 'vh';
+                    b.style.width = b.style.height = randInt(6, 12) + 'px';
+                    bubbleTrail.appendChild(b);
+                    setTimeout(() => b.remove(), 2200);
+                }
+            }, 140);
+        }
+
+        function stopBubbles() {
+            if (bubbleInterval) {
+                clearInterval(bubbleInterval);
+                bubbleInterval = null;
+            }
+            bubbleTrail.querySelectorAll('.bubble').forEach(b => b.remove());
+        }
+
+        // --- Handlers ---
+        $('#startBtn').addEventListener('click', () => {
+            stopTimer();
+            generateQuiz();
+            startTimer();
+            const firstInput = $('#tbody input');
+            if (firstInput) firstInput.focus();
+        });
+
+        $('#submitBtn').addEventListener('click', () => {
+            if (!questions.length) return;
+            gradeQuiz();
+        });
+
+        $('#retryBtn').addEventListener('click', () => {
+            stopTimer();
+            generateQuiz();
+            startTimer();
+            const firstInput = $('#tbody input');
+            if (firstInput) firstInput.focus();
+        });
+
+        // Prepare initial (not-started) view
+        generateQuiz();
+    </script>
+</body>
+</html>
