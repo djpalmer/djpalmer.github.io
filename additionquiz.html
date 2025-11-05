@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Integer Sum Practice Quiz — Party Octopus Edition</title>
+    <title>Integer Sum Practice Quiz — Party Octopus + Mobile Inputs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         :root {
@@ -112,22 +112,12 @@
             padding: 10px 8px;
             border-bottom: 1px dashed #1f2937;
             text-align: left;
+            vertical-align: middle;
         }
 
         th {
             color: var(--muted);
             font-weight: 600;
-        }
-
-        td input {
-            width: 120px;
-            max-width: 100%;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 1px solid #334155;
-            background: #0b1020;
-            color: var(--ink);
-            font-size: 16px;
         }
 
         .rowIndex {
@@ -140,6 +130,46 @@
         .ops {
             font-variant-numeric: tabular-nums;
         }
+
+        .answer-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+        }
+
+        .answer-input {
+            width: 120px;
+            max-width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0b1020;
+            color: var(--ink);
+            font-size: 16px;
+        }
+
+        .mini {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0d162a;
+            color: var(--ink);
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+            .mini:active {
+                transform: translateY(1px);
+            }
 
         .result {
             margin-top: 16px;
@@ -169,22 +199,29 @@
             flex-wrap: wrap;
         }
 
-        /* --- Party Octopus --- */
-        #octo-parade {
+        /* --- Party Octopus (fixed animation layering fix) --- */
+        /* Wrapper swims across, inner SVG bobs up/down */
+        #octo-wrap {
             position: fixed;
             left: -40vw; /* start off-screen */
             top: 65%;
             width: min(280px, 40vw);
             pointer-events: none;
             opacity: 0;
-            filter: drop-shadow(0 8px 12px rgba(0,0,0,.35));
             z-index: 9999;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,.35));
         }
 
-            #octo-parade.show {
+            #octo-wrap.show {
                 opacity: 1;
-                animation: swim-across 6500ms linear forwards, bob 1800ms ease-in-out infinite alternate;
+                animation: swim-across 6500ms linear forwards;
             }
+
+        #octo-parade {
+            width: 100%;
+            height: auto;
+            animation: bob 1800ms ease-in-out infinite alternate;
+        }
 
         @keyframes swim-across {
             from {
@@ -206,12 +243,12 @@
             }
         }
 
-        /* Tiny bubble trail */
+        /* Tiny bubble trail (simple, ambient) */
         #bubble-trail {
             position: fixed;
-            bottom: 15vh;
-            left: -10vw;
-            width: 1px;
+            bottom: 12vh;
+            left: 0;
+            width: 100vw;
             height: 1px;
             pointer-events: none;
             z-index: 9998;
@@ -273,40 +310,42 @@
         </div>
     </div>
 
-    <!-- Party Octopus (inline SVG so it works offline) -->
-    <svg id="octo-parade" viewBox="0 0 300 200" aria-hidden="true">
-        <!-- Party hat -->
-        <polygon points="155,22 190,88 120,88" fill="#f472b6" />
-        <circle cx="155" cy="20" r="6" fill="#fde68a" />
-        <!-- Head -->
-        <ellipse cx="150" cy="90" rx="60" ry="55" fill="#8b5cf6" />
-        <!-- Eyes -->
-        <circle cx="135" cy="85" r="8" fill="#111827" />
-        <circle cx="165" cy="85" r="8" fill="#111827" />
-        <circle cx="132" cy="82" r="3" fill="#e5e7eb" />
-        <circle cx="162" cy="82" r="3" fill="#e5e7eb" />
-        <!-- Smile -->
-        <path d="M130 105 Q150 120 170 105" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round" />
-        <!-- Tentacles -->
-        <g fill="#7c3aed">
-            <path d="M90 120 q-40 20 -20 40 q25 22 30 -8" />
-            <path d="M110 130 q-40 20 -20 40 q25 22 30 -8" />
-            <path d="M130 135 q-40 20 -20 40 q25 22 30 -8" />
-            <path d="M150 135 q-10 35 10 45 q25 10 20 -15" />
-            <path d="M170 135 q 40 20 20 40 q-25 22 -30 -8" />
-            <path d="M190 130 q 40 20 20 40 q-25 22 -30 -8" />
-            <path d="M210 120 q 40 20 20 40 q-25 22 -30 -8" />
-        </g>
-        <!-- Sparkles -->
-        <g fill="#fde68a">
-            <circle cx="95" cy="40" r="3" />
-            <circle cx="210" cy="35" r="3" />
-            <circle cx="70" cy="70" r="3" />
-            <circle cx="235" cy="70" r="3" />
-        </g>
-    </svg>
+    <!-- Party Octopus wrapper + SVG -->
+    <div id="octo-wrap" aria-hidden="true">
+        <svg id="octo-parade" viewBox="0 0 300 200" role="img" aria-label="Celebration octopus with party hat">
+            <!-- Party hat -->
+            <polygon points="155,22 190,88 120,88" fill="#f472b6" />
+            <circle cx="155" cy="20" r="6" fill="#fde68a" />
+            <!-- Head -->
+            <ellipse cx="150" cy="90" rx="60" ry="55" fill="#8b5cf6" />
+            <!-- Eyes -->
+            <circle cx="135" cy="85" r="8" fill="#111827" />
+            <circle cx="165" cy="85" r="8" fill="#111827" />
+            <circle cx="132" cy="82" r="3" fill="#e5e7eb" />
+            <circle cx="162" cy="82" r="3" fill="#e5e7eb" />
+            <!-- Smile -->
+            <path d="M130 105 Q150 120 170 105" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round" />
+            <!-- Tentacles -->
+            <g fill="#7c3aed">
+                <path d="M90 120 q-40 20 -20 40 q25 22 30 -8" />
+                <path d="M110 130 q-40 20 -20 40 q25 22 30 -8" />
+                <path d="M130 135 q-40 20 -20 40 q25 22 30 -8" />
+                <path d="M150 135 q-10 35 10 45 q25 10 20 -15" />
+                <path d="M170 135 q 40 20 20 40 q-25 22 -30 -8" />
+                <path d="M190 130 q 40 20 20 40 q-25 22 -30 -8" />
+                <path d="M210 120 q 40 20 20 40 q-25 22 -30 -8" />
+            </g>
+            <!-- Sparkles -->
+            <g fill="#fde68a">
+                <circle cx="95" cy="40" r="3" />
+                <circle cx="210" cy="35" r="3" />
+                <circle cx="70" cy="70" r="3" />
+                <circle cx="235" cy="70" r="3" />
+            </g>
+        </svg>
+    </div>
 
-    <!-- Bubble trail container -->
+    <!-- Bubble trail -->
     <div id="bubble-trail" aria-hidden="true"></div>
 
     <script>
@@ -323,7 +362,7 @@
         // --- Timer ---
         function startTimer() {
             startedAt = Date.now();
-            updateTimer(); // immediate paint
+            updateTimer();
             timerId = setInterval(updateTimer, 250);
         }
         function stopTimer() {
@@ -347,6 +386,55 @@
             return { a, b, ans: a + b };
         }
 
+        function makeAnswerCell(i) {
+            const wrap = document.createElement('div');
+            wrap.className = 'answer-wrap';
+
+            const input = document.createElement('input');
+            input.className = 'answer-input';
+            input.type = 'text';
+            input.inputMode = 'numeric';
+            input.pattern = '-?[0-9]*';
+            input.placeholder = 'e.g., -3';
+            input.autocomplete = 'off';
+            input.setAttribute('aria-label', `Answer for question ${i + 1}`);
+
+            // sanitize: digits + single leading "-"
+            input.addEventListener('input', (e) => {
+                let v = e.target.value.replace(/[^\d-]/g, '');
+                v = v.replace(/(?!^)-/g, ''); // only allow leading '-'
+                e.target.value = v;
+            });
+
+            const minus = document.createElement('button');
+            minus.type = 'button';
+            minus.className = 'mini';
+            minus.textContent = '−';
+            minus.title = 'Decrease by 1';
+            minus.addEventListener('click', () => {
+                const n = parseInt(input.value || '0', 10);
+                input.value = String(n - 1);
+                input.dispatchEvent(new Event('input'));
+            });
+
+            const plus = document.createElement('button');
+            plus.type = 'button';
+            plus.className = 'mini';
+            plus.textContent = '+';
+            plus.title = 'Increase by 1';
+            plus.addEventListener('click', () => {
+                const n = parseInt(input.value || '0', 10);
+                input.value = String(n + 1);
+                input.dispatchEvent(new Event('input'));
+            });
+
+            wrap.appendChild(input);
+            wrap.appendChild(minus);
+            wrap.appendChild(plus);
+
+            return { wrap, input };
+        }
+
         function generateQuiz() {
             questions = [];
             for (let i = 0; i < 10; i++) questions.push(makeQuestion());
@@ -366,24 +454,8 @@
                 tdQ.textContent = `${fmt(q.a)} + ${fmt(q.b)} =`;
 
                 const tdInput = document.createElement('td');
-                const input = document.createElement('input');
-
-                // === Mobile-friendly negative numbers ===
-                input.type = 'text';
-                input.inputMode = 'numeric';
-                input.pattern = '-?[0-9]*';
-                input.placeholder = 'e.g., -3';
-                // sanitize: allow only digits and a single leading "-"
-                input.addEventListener('input', (e) => {
-                    let v = e.target.value.replace(/[^\d-]/g, '');
-                    // remove all "-" except the first char
-                    v = v.replace(/(?!^)-/g, '');
-                    e.target.value = v;
-                });
-
-                input.autocomplete = 'off';
-                input.setAttribute('aria-label', `Answer for question ${i + 1}`);
-                tdInput.appendChild(input);
+                const { wrap, input } = makeAnswerCell(i);
+                tdInput.appendChild(wrap);
 
                 const tdTick = document.createElement('td');
                 tdTick.className = 'tick';
@@ -401,7 +473,6 @@
             $('#summary').innerHTML = '';
             $('#timer').textContent = '00:00';
 
-            // reset parade if it was mid-animation
             resetOctopus();
         }
 
@@ -412,10 +483,9 @@
             let correct = 0;
 
             $$('#tbody tr').forEach((tr, i) => {
-                const input = tr.querySelector('input');
+                const input = tr.querySelector('.answer-input');
                 const tick = tr.querySelector('.tick');
-                const userStr = input.value.trim();
-                // accept a leading "-" with digits only
+                const userStr = (input.value || '').trim();
                 const isValid = /^-?\d+$/.test(userStr);
                 const userVal = isValid ? Number(userStr) : NaN;
 
@@ -426,11 +496,10 @@
             });
 
             const score = correct * 100 - usedSeconds;
-            $('#correct').textContent = correct.toString();
-            $('#score').textContent = score.toString();
+            $('#correct').textContent = String(correct);
+            $('#score').textContent = String(score);
 
-            const summary = $('#summary');
-            summary.innerHTML =
+            $('#summary').innerHTML =
                 `<span class="score ${score >= 0 ? 'ok' : 'bad'}">Score: ${score}</span>` +
                 `<span class="pill">Correct: <b>${correct}/10</b></span>` +
                 `<span class="pill">Time: <b>${usedSeconds}s</b></span>`;
@@ -438,27 +507,25 @@
             if (correct === 10) triggerOctopusParade();
         }
 
-        // --- Party Octopus Logic ---
-        const octo = $('#octo-parade');
+        // --- Party Octopus Logic (wrapper swims; svg bobs) ---
+        const octoWrap = $('#octo-wrap');
         const bubbleTrail = $('#bubble-trail');
         let bubbleInterval = null;
 
         function triggerOctopusParade() {
-            bubbleTrail.style.left = '-10vw';
-            bubbleTrail.style.bottom = '15vh';
             startBubbles();
-            octo.classList.add('show');
+            octoWrap.classList.add('show');
             const onEnd = () => {
                 stopBubbles();
-                octo.classList.remove('show');
-                octo.removeEventListener('animationend', onEnd);
+                octoWrap.classList.remove('show');
+                octoWrap.removeEventListener('animationend', onEnd);
             };
-            octo.addEventListener('animationend', onEnd);
+            octoWrap.addEventListener('animationend', onEnd);
         }
 
         function resetOctopus() {
             stopBubbles();
-            octo.classList.remove('show');
+            octoWrap.classList.remove('show');
         }
 
         function startBubbles() {
@@ -468,9 +535,11 @@
                 for (let i = 0; i < count; i++) {
                     const b = document.createElement('div');
                     b.className = 'bubble';
-                    b.style.left = (parseFloat(getComputedStyle(octo).left) + 80 + randInt(-10, 10)) + 'px';
-                    b.style.bottom = (randInt(10, 22)) + 'vh';
-                    b.style.width = b.style.height = randInt(6, 12) + 'px';
+                    // distribute bubbles roughly along the lower half of the viewport
+                    b.style.left = randInt(0, 100) + 'vw';
+                    b.style.bottom = randInt(8, 24) + 'vh';
+                    const s = randInt(6, 12);
+                    b.style.width = b.style.height = s + 'px';
                     bubbleTrail.appendChild(b);
                     setTimeout(() => b.remove(), 2200);
                 }
@@ -490,7 +559,7 @@
             stopTimer();
             generateQuiz();
             startTimer();
-            const firstInput = $('#tbody input');
+            const firstInput = $('#tbody .answer-input');
             if (firstInput) firstInput.focus();
         });
 
@@ -503,7 +572,7 @@
             stopTimer();
             generateQuiz();
             startTimer();
-            const firstInput = $('#tbody input');
+            const firstInput = $('#tbody .answer-input');
             if (firstInput) firstInput.focus();
         });
 
