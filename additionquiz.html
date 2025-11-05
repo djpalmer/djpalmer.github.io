@@ -120,13 +120,14 @@
         }
 
         td input {
-            width: 110px;
+            width: 120px;
             max-width: 100%;
-            padding: 8px 10px;
+            padding: 10px 12px;
             border-radius: 10px;
             border: 1px solid #334155;
             background: #0b1020;
             color: var(--ink);
+            font-size: 16px;
         }
 
         .rowIndex {
@@ -366,8 +367,20 @@
 
                 const tdInput = document.createElement('td');
                 const input = document.createElement('input');
-                input.type = 'number';
+
+                // === Mobile-friendly negative numbers ===
+                input.type = 'text';
                 input.inputMode = 'numeric';
+                input.pattern = '-?[0-9]*';
+                input.placeholder = 'e.g., -3';
+                // sanitize: allow only digits and a single leading "-"
+                input.addEventListener('input', (e) => {
+                    let v = e.target.value.replace(/[^\d-]/g, '');
+                    // remove all "-" except the first char
+                    v = v.replace(/(?!^)-/g, '');
+                    e.target.value = v;
+                });
+
                 input.autocomplete = 'off';
                 input.setAttribute('aria-label', `Answer for question ${i + 1}`);
                 tdInput.appendChild(input);
@@ -401,7 +414,11 @@
             $$('#tbody tr').forEach((tr, i) => {
                 const input = tr.querySelector('input');
                 const tick = tr.querySelector('.tick');
-                const userVal = Number(input.value);
+                const userStr = input.value.trim();
+                // accept a leading "-" with digits only
+                const isValid = /^-?\d+$/.test(userStr);
+                const userVal = isValid ? Number(userStr) : NaN;
+
                 const isRight = Number.isFinite(userVal) && (userVal === questions[i].ans);
                 tick.textContent = isRight ? '✓' : '✗';
                 tick.style.color = isRight ? 'var(--accent)' : 'var(--warn)';
@@ -418,10 +435,7 @@
                 `<span class="pill">Correct: <b>${correct}/10</b></span>` +
                 `<span class="pill">Time: <b>${usedSeconds}s</b></span>`;
 
-            // Trigger the octopus if it's a perfect 10/10 (as requested)
-            if (correct === 10) {
-                triggerOctopusParade();
-            }
+            if (correct === 10) triggerOctopusParade();
         }
 
         // --- Party Octopus Logic ---
@@ -430,15 +444,10 @@
         let bubbleInterval = null;
 
         function triggerOctopusParade() {
-            // Start bubbles
             bubbleTrail.style.left = '-10vw';
             bubbleTrail.style.bottom = '15vh';
             startBubbles();
-
-            // Show + animate octo
             octo.classList.add('show');
-
-            // Stop bubbles and hide octo after animation ends
             const onEnd = () => {
                 stopBubbles();
                 octo.classList.remove('show');
@@ -455,7 +464,6 @@
         function startBubbles() {
             if (bubbleInterval) return;
             bubbleInterval = setInterval(() => {
-                // Create 2–4 bubbles per tick
                 const count = randInt(2, 4);
                 for (let i = 0; i < count; i++) {
                     const b = document.createElement('div');
